@@ -20,10 +20,12 @@ struct DisplayInfo {
 fn list_displays() -> Result<Vec<DisplayInfo>, String> {
     let mut displays: Vec<DisplayInfo> = Vec::new();
     for mut display in Display::enumerate() {
-        display.update_capabilities().unwrap_or(format!(
-            "Could not update capabilities for: {:?}",
-            display.info
-        ));
+        match display.update_capabilities() {
+            Ok(_) => {}
+            Err(e) => {
+                eprintln!("failed to update capabilities: {}", e)
+            }
+        }
 
         let info = &display.info;
         let (Some(model), Some(manufacturer)) = (&info.model_name, &info.manufacturer_id) else {
